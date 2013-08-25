@@ -7,7 +7,9 @@ Backbone.Memoize = function(Klass, methods) {
 
   _.forEach(methods, function(methodName) {
     var method = Klass.prototype[methodName];
-    if (!_.isFunction(method)) throw new TypeError('`' + methodName + '` has to be a function');
+
+    if (!_.isFunction(method))
+      throw new TypeError('`' + methodName + '` has to be a function');
 
     Klass.prototype[methodName] = function() {
       var key = getKey(methodName, arguments);

@@ -1,15 +1,15 @@
 describe('Backbone.Memoize', function() {
   var expect = window.chai.expect;
-  var users;
+  var employees;
 
-  var User = Backbone.Model.extend({
+  var Employee = Backbone.Model.extend({
     rating: function() {
       return this.collection.factorial(this.get('rating'));
     }
   });
 
-  var Users = Backbone.Collection.extend({
-    model: User,
+  var Employees = Backbone.Collection.extend({
+    model: Employee,
     initialize: function() {},
 
     best: function() {
@@ -29,11 +29,11 @@ describe('Backbone.Memoize', function() {
     }
   });
 
-  Backbone.Memoize(User, ['rating']);
-  Backbone.Memoize(Users, ['best', 'byType', 'factorial']);
+  Backbone.Memoize(Employee, ['rating']);
+  Backbone.Memoize(Employees, ['best', 'byType', 'factorial']);
 
   beforeEach(function() {
-    users = new Users(_.shuffle([
+    employees = new Employees(_.shuffle([
       { id: 1, rating: 3, type: 'developer', name: 'Alex' },
       { id: 2, rating: 2, type: 'developer', name: 'John' },
       { id: 3, rating: 8, type: 'CEO',       name: 'Adam' },
@@ -47,12 +47,12 @@ describe('Backbone.Memoize', function() {
 
   describe('validation', function() {
     it('does not applies twice', function() {
-      expect(function() { Backbone.Memoize(User, ['rating']) }).throw(/already/);
+      expect(function() { Backbone.Memoize(Employee, ['rating']) }).throw(/already/);
     });
 
     it('throws error without second argument', function() {
-      expect(function() { Backbone.Memoize(User) }).throw(/require/);
-      expect(function() { Backbone.Memoize(User, {}) }).throw(/require/);
+      expect(function() { Backbone.Memoize(Employee) }).throw(/require/);
+      expect(function() { Backbone.Memoize(Employee, {}) }).throw(/require/);
     });
 
     it('throws error for not existing methods or properties', function() {
@@ -64,23 +64,23 @@ describe('Backbone.Memoize', function() {
 
   describe('static', function() {
     it('works with model', function() {
-      var user = users.get(4);
+      var user = employees.get(4);
       expect(user.rating()).equal(24);
       expect(user._memoize.rating).equal(24);
       expect(_.keys(user._memoize)).length(1);
     });
 
     it('works with collection', function() {
-      expect(users.best().get('name')).equal('Adam');
-      expect(_.keys(users._memoize)).include('factorial8');
-      expect(users._memoize.best.id).equal(3);
-      expect(_.keys(users._memoize)).length(10);
+      expect(employees.best().get('name')).equal('Adam');
+      expect(_.keys(employees._memoize)).include('factorial8');
+      expect(employees._memoize.best.id).equal(3);
+      expect(_.keys(employees._memoize)).length(10);
     });
   });
 
   describe('dynamic', function() {
     it('model handles `change` event', function() {
-      var user = users.get(1);
+      var user = employees.get(1);
       expect(user.rating()).equal(6);
       expect(_.keys(user._memoize)).length(1);
 
@@ -89,21 +89,21 @@ describe('Backbone.Memoize', function() {
     });
 
     it('collection handles `add change remove` events', function() {
-      expect(users.byType('sales')).length(2);
-      expect(users.best().get('name')).equal('Adam');
+      expect(employees.byType('sales')).length(2);
+      expect(employees.best().get('name')).equal('Adam');
 
-      users.get(2).set('type', 'sales');
-      expect(users.byType('sales')).length(3);
+      employees.get(2).set('type', 'sales');
+      expect(employees.byType('sales')).length(3);
 
-      users.add([
+      employees.add([
         { id: 10, rating: 5,  type: 'developer', name: 'Boris' },
         { id: 11, rating: 10, type: 'investor',  name: 'Alan' }
       ]);
-      expect(users.best().get('name')).equal('Alan');
+      expect(employees.best().get('name')).equal('Alan');
 
-      users.remove([users.get(11), users.get(5), users.get(6)]);
-      expect(users.byType('sales')).length(1);
-      expect(users.best().get('name')).equal('Adam');
+      employees.remove([employees.get(11), employees.get(5), employees.get(6)]);
+      expect(employees.byType('sales')).length(1);
+      expect(employees.best().get('name')).equal('Adam');
     });
   });
 });
