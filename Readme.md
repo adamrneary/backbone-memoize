@@ -1,8 +1,9 @@
 # Backbone.Memoize
 
-  Lazy cache for backbone collections/models.
-  It works like [underscore's memoize](http://documentcloud.github.io/underscore/#memoize),
-  but resets cache after every event. It especially useful for complex computations.
+  Lazy-ass caches for Backbone collections and models.
+  It works like [Underscore's memoize](http://documentcloud.github.io/underscore/#memoize)
+  but invalidates with the appropriate Backbone events. This is especially
+  useful for complex computations.
 
 ## Installation
 
@@ -40,30 +41,23 @@ var employees = new Employees([
   { id: 6, rating: 6, type: 'QA',        name: 'Jess' }
 ]);
 
-// work with all methods as usual, except now result is stored in memory
-// and app works really fast.
+// Functions work with all methods as usual, except now the results are stored
+// in memory, and the app works much faster in cases where function execution
+// is particularly expensive.
 employees.best(); // User(1)
 
-// same result, but now without expensive filtering
+// Same result, but without expensive filtering
 employees.best(); // User(1)
 
-// when you update data, cache reseted
+// When collection members are added, removed, or updated, the cache is reset
 employees.get(5).set('rating', 10);
 employees.best(); // User(5)
 ```
 
 ## Backbone.Memoize(Klass, methods)
 
-  Make list of methods for selected Klass memoizable.
-  It detects Backbone.Collection and subscribes on 3 types of events: `add`, `change`, `remove`
-  for other classes it just handles `change` event.
-
-## Development
-
-  * `npm install` - to install development depenencies
-  * `npm test` - to ensure that all tests pass
-  * `npm start` - to start watch server for test suite
-
-## Licence
-
-  [Activecell](http://activecell.com/), MIT
+  Mark each method in the passed array as memoizable for the passed Klass.
+  Backbone.Memoize will detect the appropriate Backbone.Collection and
+  subscribe to `add`, `change`, and `remove` events.
+  For classes other than Backbone.Collection it will only subscribe to `change`
+  events.
