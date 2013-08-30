@@ -19,7 +19,7 @@ var Employees = Backbone.Collection.extend({
 
   best: function() {
     return this.max(function(user) {
-      return user.get('rating')
+      return this.factorial(user.get('rating'));
     });
   },
 
@@ -27,10 +27,17 @@ var Employees = Backbone.Collection.extend({
     return this.filter(function(user) {
       return user.get('type') === type;
     });
+  },
+
+  factorial: function(n) {
+    return n <= 1 ? 1 : n * this.factorial(n - 1);
   }
 });
 
-Backbone.Memoize(Employees, ['best', 'sales']);
+Backbone.Memoize(Employees, ['best', 'sales', 'factorial'], {
+  best: 'add remove change:rating', // setup specific events for method
+  factorial: false // pure function and we never reset cache
+});
 
 var employees = new Employees([
   { id: 1, rating: 8, type: 'CEO',       name: 'Adam' },
@@ -54,10 +61,11 @@ employees.get(5).set('rating', 10);
 employees.best(); // User(5)
 ```
 
-## Backbone.Memoize(Klass, methods)
+## Backbone.Memoize(Klass, methods, [options])
 
   Mark each method in the passed array as memoizable for the passed Klass.
   Backbone.Memoize will detect the appropriate Backbone.Collection and
   subscribe to `add`, `change`, and `remove` events.
   For classes other than Backbone.Collection it will only subscribe to `change`
   events.
+  Also you can specify events with `options`. See example.

@@ -1,3 +1,4 @@
-## 0.1.0 - 2013-08-25 - Initial release
+## 0.1.0 - 2013-08-30 - Initial release
 
-  * base implementation
+  * base pattern implementation
+  * setup events for every method
