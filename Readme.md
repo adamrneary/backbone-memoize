@@ -1,4 +1,4 @@
-# Backbone.Memoize
+# Backbone.Memoize [![Build Status](https://circleci.com/gh/activecell/backbone-memoize.png)](https://circleci.com/gh/activecell/backbone-memoize)
 
   Lazy-ass caches for Backbone collections and models.
   It works like [Underscore's memoize](http://documentcloud.github.io/underscore/#memoize)
@@ -9,7 +9,7 @@
 
     $ bower install backbone-memoize --save
 
-  or include [index.js]() with `script` tag.
+  or include [index.js](https://github.com/activecell/backbone-memoize/blob/master/index.js) with `script` tag.
 
 ## Example
 
