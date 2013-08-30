@@ -10,11 +10,10 @@ describe('Backbone.Memoize', function() {
 
   var Employees = Backbone.Collection.extend({
     model: Employee,
-    initialize: function() {},
 
     best: function() {
-      return this.max(function(user) {
-        return user.rating();
+      return this.max(function(employee) {
+        return employee.rating();
       });
     },
 
@@ -23,14 +22,20 @@ describe('Backbone.Memoize', function() {
     },
 
     byType: function(type) {
-      return this.filter(function(user) {
-        return user.get('type') === type;
+      return this.filter(function(employee) {
+        return employee.get('type') === type;
       });
     }
   });
 
-  Backbone.Memoize(Employee, ['rating']);
-  Backbone.Memoize(Employees, ['best', 'byType', 'factorial']);
+  Backbone.Memoize(Employee, ['rating'], {
+    rating: 'change:rating'
+  });
+
+  Backbone.Memoize(Employees, ['best', 'byType', 'factorial'], {
+    factorial: false,
+    best: 'add remove change:rating'
+  });
 
   beforeEach(function() {
     employees = new Employees(_.shuffle([
@@ -80,12 +85,17 @@ describe('Backbone.Memoize', function() {
 
   describe('dynamic', function() {
     it('model handles `change` event', function() {
-      var user = employees.get(1);
-      expect(user.rating()).equal(6);
-      expect(_.keys(user._memoize)).length(1);
+      var employee = employees.get(1);
+      expect(employee.rating()).equal(6);
+      expect(_.keys(employee._memoize)).length(1);
 
-      user.set('rating', 2);
-      expect(user.rating()).equal(2);
+      employee.set('rating', 2);
+      expect(_.keys(employee._memoize)).length(0);
+      expect(employee.rating()).equal(2);
+
+      employee.set('name', 'Pero');
+      expect(_.keys(employee._memoize)).length(1);
+      expect(employee.rating()).equal(2);
     });
 
     it('collection handles `add change remove` events', function() {
@@ -93,15 +103,18 @@ describe('Backbone.Memoize', function() {
       expect(employees.best().get('name')).equal('Adam');
 
       employees.get(2).set('type', 'sales');
+      expect(_.keys(employees._memoize)).length(9 + 1);
       expect(employees.byType('sales')).length(3);
 
       employees.add([
         { id: 10, rating: 5,  type: 'developer', name: 'Boris' },
         { id: 11, rating: 10, type: 'investor',  name: 'Alan' }
       ]);
+      expect(_.keys(employees._memoize)).length(9 + 0);
       expect(employees.best().get('name')).equal('Alan');
 
       employees.remove([employees.get(11), employees.get(5), employees.get(6)]);
+      expect(_.keys(employees._memoize)).length(11 + 0);
       expect(employees.byType('sales')).length(1);
       expect(employees.best().get('name')).equal('Adam');
     });
