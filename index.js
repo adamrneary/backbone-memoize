@@ -12,7 +12,7 @@ Backbone.Memoize = function(Klass, methods, options) {
   // Ensure that the passed parameters are valid.
   if (!methods || !methods.length) throw new TypeError('`Methods` is required.');
   if (Klass.prototype._memoized) throw new TypeError('Class is already memoized.');
-  if (!options) options = {};
+  if (_.isUndefined(options)) options = {};
 
   // `methods` is an array, so process each one
   _.forEach(methods, function(name) {
@@ -48,6 +48,7 @@ function getKey(name, args) {
 function setup(entry, methods, options) {
   // Create hash for lookup
   entry._memoize = {};
+  if (options === false) return;
 
   // Bind entry to the appropriate events
   var defaults = entry instanceof Backbone.Collection ?
