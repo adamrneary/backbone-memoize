@@ -64,3 +64,4 @@ employees.best(); // User(5)
   For classes other than Backbone.Collection it will only subscribe to `change`
   events.
   Also you can specify events with `options`. See example.
+  If you set options == false, it will ignore all events => regular _.memoize behaviour.
