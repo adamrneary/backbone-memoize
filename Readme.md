@@ -23,20 +23,15 @@ var Employees = Backbone.Collection.extend({
     });
   },
 
-  byType: function(type) {
-    return this.filter(function(user) {
-      return user.get('type') === type;
-    });
-  },
-
+  // regular factorial implementation, as example of pure function
   factorial: function(n) {
     return n <= 1 ? 1 : n * this.factorial(n - 1);
   }
 });
 
-Backbone.Memoize(Employees, ['best', 'sales', 'factorial'], {
+Backbone.Memoize(Employees, ['best', 'factorial'], {
   best: 'add remove change:rating', // setup specific events for method
-  factorial: false // pure function and we never reset cache
+  factorial: false // pure function and we never reset the cache
 });
 
 var employees = new Employees([
