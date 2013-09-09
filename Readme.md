@@ -23,7 +23,8 @@ var Employees = Backbone.Collection.extend({
     });
   },
 
-  // regular factorial implementation, as example of pure function
+  // standard factorial implementation, as example of pure function
+  // http://en.wikipedia.org/wiki/Factorial
   factorial: function(n) {
     return n <= 1 ? 1 : n * this.factorial(n - 1);
   }
